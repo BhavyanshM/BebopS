@@ -8,12 +8,12 @@
     <arg name="z" default="0.0" />
     <arg name="use_sim_time" default="true"/>
     <arg name="world_name" default="basic"/>
-    <arg name="wind_force" default="0.25"/>
+    <arg name="wind_force" default="0.5"/>
     <arg name="wind_start" default="5.0"/>
-    <arg name="wind_duration" default="40.0"/>
-    <arg name="wind_direction_x" default="1.0"/>
+    <arg name="wind_duration" default="60.0"/>
+    <arg name="wind_direction_x" default="0.0"/>
     <arg name="wind_direction_y" default="0.0"/>
-    <arg name="wind_direction_z" default="0.0"/>
+    <arg name="wind_direction_z" default="1.0"/>
     <arg name="csvFilesStoring" default="false"/>
     <arg name="csvFilesStoringTime" default="60.0"/> <!-- seconds -->
     <arg name="user_account" default="giuseppe"/> <!-- account name of your pc -->
@@ -22,9 +22,9 @@
     <arg name="enable_odometry_sensor_with_noise" default="false"/>
     <arg name="disable_odometry_sensor_with_noise" default="true"/>
     <arg name="enable_ground_truth_sensor" default="false"/>
-    <arg name="enable_wind_plugin" default="false"/>
+    <arg name="enable_wind_plugin" default="true"/>
     <arg name="enable_laser1D" default="false"/>
-    <arg name="enable_plots" default="false"/>
+    <arg name="enable_plots" default="true"/>
     <arg name="enable_imu" default="true"/>
 
     
@@ -36,7 +36,7 @@
 
     <!-- Launch UAV -->
     <include file="$(find bebop_simulator)/launch/spawn_bebop.launch">
-       <arg name="name" value="$(arg name)" />
+       <arg name="name" value="$(arg name)"/>
        <arg name="x" value="$(arg x)"/>
        <arg name="y" value="$(arg y)"/>
        <arg name="z" value="$(arg z)"/>
@@ -88,19 +88,18 @@
        <node name="waypoint_example" pkg="bebop_simulator" type="waypoint_example" output="screen" args="$(find bebop_simulator)/resource/waypoints.txt"/>   
     </group>
 
-
-
-   <!-- Launch the trajectory plot -->
+    <!-- Launch the trajectory plot -->
    <group ns="$(arg plotName)" if="$(arg enable_plots)">
-    <!-- <include file="$(find bebop_simulator)/launch/plots.launch"/> -->
+
+     <!-- Launch the state errors plot -->
     
-    <!-- Launch the position and velocity errors plot -->
 
-
-    <!-- Launch the angular and angular velocities errors plot -->
+    
+    <node name="position_errors_plot" pkg="rqt_plot" type="rqt_plot" args="--clear-config /$(arg name)/positionAndVelocityErrors/pose/pose/position" output="screen" /> 
+    
     <node name="angular_errors_plot" pkg="rqt_plot" type="rqt_plot" args="--clear-config /$(arg name)/angularAndAngularVelocityErrors/pose/pose/position" output="screen" />
 
-    <node name="position_errors_plot" pkg="rqt_plot" type="rqt_plot" args="--clear-config /$(arg name)/positionAndVelocityErrors/pose/pose/position" output="screen" />
+
    </group>
 
 </launch>

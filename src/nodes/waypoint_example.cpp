@@ -108,13 +108,13 @@ int main(int argc, char** argv){
   // Wait for t seconds to let the Gazebo GUI show up.
   double t = 0.5;
   ros::Duration(t).sleep();
-
+  float zPos = 1.0;
   ROS_INFO("Start publishing waypoints.");
 
   int count = 0;
-  int wTime = 0.01;
-  int totalDuration = 100000;
-  float zPos = 1.0;
+  int waitTime = 1.0;
+  int totalDuration = 1000000;
+
   for (size_t i = 0; i < totalDuration; ++i) {
         count++;
         trajectory_msgs::MultiDOFJointTrajectory trajectory_msg;
@@ -133,7 +133,9 @@ int main(int argc, char** argv){
         trajectory_pub.publish(trajectory_msg);
 
          // Wait for t seconds to let the Gazebo GUI show up.
-         double t = wTime;
+
+         double t = waitTime;
+
          ros::Duration(t).sleep();
 
   }

@@ -12,10 +12,17 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs
   cmake_modules
+  dynamic_reconfigure
 )
 
 find_package(
   Eigen REQUIRED
+)
+
+
+generate_dynamic_reconfigure_options(
+  cfg/SliderCFG.cfg
+  #...
 )
 
 catkin_package(
@@ -47,6 +54,7 @@ add_library(extendedKalmanFilter
 add_library(waypoint_filter
    src/library/waypoint_filter.cpp
 )
+
 
 target_link_libraries(position_controller ${catkin_LIBRARIES})
 add_dependencies(position_controller ${catkin_EXPORTED_TARGETS})
@@ -81,6 +89,13 @@ add_dependencies(waypoint_example ${catkin_EXPORTED_TARGETS})
 add_executable(quaternion_to_rpy src/nodes/quaternion_to_rpy.cpp)
 target_link_libraries(quaternion_to_rpy ${catkin_LIBRARIES})
 add_dependencies(quaternion_to_rpy ${catkin_EXPORTED_TARGETS})
+
+
+add_executable(serverSlider src/nodes/serverSlider.cpp)
+target_link_libraries(serverSlider ${catkin_LIBRARIES})
+add_dependencies(serverSlider ${PROJECT_NAME}_gencfg)
+
+
 
 install(TARGETS position_controller extendedKalmanFilter position_controller_with_bebop waypoint_filter
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}

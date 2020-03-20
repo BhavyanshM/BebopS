@@ -56,6 +56,9 @@ static const double MuDefaultRollController = 0.0544;
 static const double MuDefaultPitchController = 0.0543;
 static const double MuDefaultYawRateController = 0.44;
 
+static const double test1const = 0.0;
+static const double sliderconst = 0.0;
+
 static const Eigen::Vector3d UqDefaultXYZ = Eigen::Vector3d(1.1810, 1.1810, 4.6697);
 
 class PositionControllerParameters {
@@ -72,7 +75,9 @@ class PositionControllerParameters {
         mu_theta_(MuDefaultPitchController),
         mu_phi_(MuDefaultRollController),
         mu_psi_(MuDefaultYawRateController),
-	    U_q_(UqDefaultXYZ){
+	    U_q_(UqDefaultXYZ),
+        test1(test1const),
+        slider(sliderconst){
   }
 
   Eigen::Vector2d beta_xy_;
@@ -88,6 +93,10 @@ class PositionControllerParameters {
   double mu_phi_;
   double mu_theta_;
   double mu_psi_;
+
+  double test1;
+  double slider;
+
   
   Eigen::Vector3d U_q_;
 };
@@ -127,6 +136,7 @@ class PositionControllerParameters {
             bool waypointFilter_active_;
             bool EKF_active_;
 
+        
             EIGEN_MAKE_ALIGNED_OPERATOR_NEW
         private:
             //Boolean variables to active/unactive the controller and the data storage
@@ -165,6 +175,8 @@ class PositionControllerParameters {
             std::vector<string> listControlMixerTermsUnSaturatedBefore_;
           
             //Controller gains
+            double test1;
+            double slider;
             double beta_x_, beta_y_, beta_z_;
             double beta_phi_, beta_theta_, beta_psi_;
 

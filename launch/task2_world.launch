@@ -8,8 +8,8 @@
     <arg name="z" default="0.0" />
     <arg name="use_sim_time" default="true"/>
     <arg name="world_name" default="basic"/>
-    <arg name="wind_force" default="0.5"/>
-    <arg name="wind_start" default="5.0"/>
+    <arg name="wind_force" default="0.0"/>
+    <arg name="wind_start" default="0.0"/>
     <arg name="wind_duration" default="60.0"/>
     <arg name="wind_direction_x" default="0.0"/>
     <arg name="wind_direction_y" default="0.0"/>
@@ -69,6 +69,8 @@
       <param name="user_account" value="$(arg user_account)"/>
       <param name="waypoint_filter" value="$(arg waypoint_filter)"/>
       <param name="EKFActive" value="$(arg EKFActive)"/>
+
+      <rosparam name="SliderValue" value="$(find bebop_simulator)/double_param" />
       <!-- <remap from="/command/motor_speed" to="/gazebo/command/motor_speed" /> -->
       <remap from="/odometry" to="/bebop/odometry" />
       <remap from="/odometry_gt" to="/bebop/odometry_gt" />
@@ -98,6 +100,13 @@
     <node name="position_errors_plot" pkg="rqt_plot" type="rqt_plot" args="--clear-config /$(arg name)/positionAndVelocityErrors/pose/pose/position" output="screen" /> 
     
     <node name="angular_errors_plot" pkg="rqt_plot" type="rqt_plot" args="--clear-config /$(arg name)/angularAndAngularVelocityErrors/pose/pose/position" output="screen" />
+
+    <node name="rqt_configure" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen"> 
+      </node>
+
+      <node name="serverSlider" pkg="bebop_simulator" type="serverSlider" output="screen"> 
+      </node>
+
 
 
    </group>

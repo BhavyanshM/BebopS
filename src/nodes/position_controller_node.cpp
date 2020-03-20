@@ -73,6 +73,8 @@ PositionControllerNode::PositionControllerNode() {
     //Just for data plotting
     angularAndAngularVelocityErrors_pub_= nh.advertise<nav_msgs::Odometry>(bebop_simulator_msgs::default_topics::ANGULAR_AND_ANGULAR_VELOCITY_ERRORS, 1);
 
+
+
 }
 
 //Destructor
@@ -104,6 +106,14 @@ void PositionControllerNode::InitializeParams() {
 
   // Read parameters from rosparam. The parameters are read by the YAML file and they
   // are used to create the "controller_parameters_" object
+  GetRosParameter(pnh, "test1/test1",
+                  position_controller_.controller_parameters_.test1,
+                  &position_controller_.controller_parameters_.test1);
+  GetRosParameter(pnh, "SliderValue",
+                  position_controller_.controller_parameters_.slider,
+                  &position_controller_.controller_parameters_.slider);
+   //printf("Test1 Ros Param: %lf \n",position_controller_.controller_parameters_.test1);
+   printf("Slider Ros Param: %lf \n",position_controller_.controller_parameters_.slider);
   GetRosParameter(pnh, "beta_xy/beta_x",
                   position_controller_.controller_parameters_.beta_xy_.x(),
                   &position_controller_.controller_parameters_.beta_xy_.x());
@@ -153,7 +163,7 @@ void PositionControllerNode::InitializeParams() {
   GetRosParameter(pnh, "U_xyz/U_z",
                   position_controller_.controller_parameters_.U_q_.z(),
                   &position_controller_.controller_parameters_.U_q_.z());
-
+  
   //Analogously, the object "vehicle_parameters_" is created
   GetVehicleParameters(pnh, &position_controller_.vehicle_parameters_);
 
@@ -241,6 +251,9 @@ void PositionControllerNode::InitializeParams() {
   bool EKFActive;
   double dataStoringTime;
   std::string user;
+  double sld;
+
+ 
 
   if (pnh.getParam("user_account", user)){
 	  ROS_INFO("Got param 'user_account': %s", user.c_str());

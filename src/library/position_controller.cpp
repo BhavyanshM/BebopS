@@ -38,6 +38,7 @@
 #include <ros/console.h>
 
 
+
 #define M_PI                      3.14159265358979323846  /* pi */
 #define TsP                       10e-3  /* Position control sampling time */
 #define TsA                       5e-3 /* Attitude control sampling time */
@@ -103,6 +104,8 @@ PositionController::PositionController()
       lambda_x_(0),
       lambda_y_(0),
       lambda_z_(0),
+      test1(0),
+      slider(0),
       control_({0,0,0,0}), //roll, pitch, yaw rate, thrust
       state_({0,  //Position.x 
               0,  //Position.y
@@ -140,6 +143,7 @@ PositionController::PositionController()
             		filter_parameters_.Qp_vz_ = 0;
             		filter_parameters_.Rp_ = Eigen::MatrixXf::Zero(6,6);
             		filter_parameters_.Qp_ = Eigen::MatrixXf::Identity(6,6);
+
 
             	  // Timers set the outer and inner loops working frequency
             		timer1_ = n1_.createTimer(ros::Duration(TsA), &PositionController::CallbackAttitude, this, false, true);
@@ -328,9 +332,14 @@ void PositionController::CallbackSaveData(const ros::TimerEvent& event){
 
 }
 
+
 // The function moves the controller gains read from controller_bebop.yaml file to private variables of the class.
 // These variables will be employed during the simulation
 void PositionController::SetControllerGains(){
+
+
+      test1 = controller_parameters_.test1;
+      slider = controller_parameters_.slider;
 
       beta_x_ = controller_parameters_.beta_xy_.x();
       beta_y_ = controller_parameters_.beta_xy_.y();
@@ -421,6 +430,7 @@ void PositionController::SetLaunchFileParameters(){
 		// The client needed to get information about the Gazebo simulation environment both the attitude and position errors
 		clientAttitude_ = clientHandleAttitude_.serviceClient<gazebo_msgs::GetWorldProperties>("/gazebo/get_world_properties");
 		clientPosition_ = clientHandlePosition_.serviceClient<gazebo_msgs::GetWorldProperties>("/gazebo/get_world_properties");
+    
 
 		ros::WallTime beginWallOffset = ros::WallTime::now();
 		wallSecsOffset_ = beginWallOffset.toSec();
@@ -808,6 +818,8 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    assert(u_Terr);
    
    //u_x computing
+   
+
    *u_x = ( (e_x_ * K_x_1_ * K_x_2_)/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
    
    if (*u_x > 1 || *u_x <-1)
@@ -846,7 +858,10 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    *u_y = m_* ( *u_y * lambda_y_);
    
    //u_z computing
-   *u_z = ( (e_z_ * K_z_1_ * K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
+
+   
+   //*u_z = ( (e_z_ * K_z_1_ * K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
+   *u_z = ( (e_z_ * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
    
    if (*u_z > 1 || *u_z <-1)
 	   if (*u_z > 1)
@@ -862,9 +877,18 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
 	   else
 		   *u_z = -1;
 	   
-   *u_z = m_* ( *u_z * lambda_z_);
+    *u_z = m_* ( *u_z * lambda_z_);
+   //*u_z = m_* ( *u_z * (e_z_ * Slider)* lambda_z_);
+  
    
-   //u_Terr computing
+   
+   
+   
+    //printf("Test1 from controller: %lf \n",test1);
+    printf("Slider from controller: %lf \n",slider);
+   
+   
+   //u_Terr cocmputing
    *u_Terr = *u_z + (m_ * g_);
    
    //u_T computing

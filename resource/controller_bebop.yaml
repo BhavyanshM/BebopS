@@ -10,3 +10,6 @@ mu_phi: {mu_phi: 0.0544}
 mu_theta: {mu_theta: 0.0543}
 mu_psi: {mu_psi: 0.44}
 U_xyz: {U_x: 1.1810, U_y: 1.1810, U_z: 4.6697}
+
+test1: {test1: 20}
+

@@ -57,6 +57,8 @@ static const double MuDefaultPitchController = 0.0543;
 static const double MuDefaultYawRateController = 0.44;
 
 static const double test1const = 0.0;
+static const double pgainconst = 0.0;
+static const double dgainconst = 0.0;
 static const double sliderconst = 0.0;
 
 static const Eigen::Vector3d UqDefaultXYZ = Eigen::Vector3d(1.1810, 1.1810, 4.6697);
@@ -77,6 +79,8 @@ class PositionControllerParameters {
         mu_psi_(MuDefaultYawRateController),
 	    U_q_(UqDefaultXYZ),
         test1(test1const),
+        pgain(pgainconst),
+        dgain(dgainconst),
         slider(sliderconst){
   }
 
@@ -95,6 +99,8 @@ class PositionControllerParameters {
   double mu_psi_;
 
   double test1;
+  double pgain;
+  double dgain;
   double slider;
 
   
@@ -176,6 +182,8 @@ class PositionControllerParameters {
           
             //Controller gains
             double test1;
+            double pgain;
+            double dgain;
             double slider;
             double beta_x_, beta_y_, beta_z_;
             double beta_phi_, beta_theta_, beta_psi_;

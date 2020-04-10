@@ -105,6 +105,8 @@ PositionController::PositionController()
       lambda_y_(0),
       lambda_z_(0),
       test1(0),
+      pgain(0),
+      dgain(0),
       slider(0),
       control_({0,0,0,0}), //roll, pitch, yaw rate, thrust
       state_({0,  //Position.x 
@@ -339,6 +341,8 @@ void PositionController::SetControllerGains(){
 
 
       test1 = controller_parameters_.test1;
+      pgain = controller_parameters_.pgain;
+      dgain = controller_parameters_.dgain;
       slider = controller_parameters_.slider;
 
       beta_x_ = controller_parameters_.beta_xy_.x();
@@ -819,25 +823,25 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    
    //u_x computing
    
-
+  //*u_x = ( (e_x_ * K_x_1_ * K_x_2_)/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
    *u_x = ( (e_x_ * K_x_1_ * K_x_2_)/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
    
    if (*u_x > 1 || *u_x <-1)
 	   if (*u_x > 1)
 		   *u_x = 1;
 	   else
-		   *u_x = -1;
+		  *u_x = -1;
 	   
    *u_x = (*u_x * 1/2) + ( (K_x_1_/lambda_x_) * dot_e_x_ );
    
-   if (*u_x > 1 || *u_x <-1)
-	   if (*u_x > 1)
-		   *u_x = 1;
-	   else
-		   *u_x = -1;
-	   
-   *u_x = m_ * (*u_x * lambda_x_);
-   
+   //if (*u_x > 1 || *u_x <-1)
+	  // if (*u_x > 1)
+		 //  *u_x = 1;
+	  // else
+		//   *u_x = -1;
+	  //*u_x = m_ * (*u_x * lambda_x_);
+   *u_x = m_ * ((*u_x +(pgain * e_x_))* lambda_x_);
+   printf("U_x from controller: %lf \n",*u_x);
    //u_y computing
    *u_y = ( (e_y_ * K_y_1_ * K_y_2_)/lambda_y_ ) + ( (dot_e_y_ * K_y_2_)/lambda_y_ );
    
@@ -859,33 +863,54 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    
    //u_z computing
 
-   
+    
    //*u_z = ( (e_z_ * K_z_1_ * K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
-   *u_z = ( (e_z_ * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
+   // *u_z = ( (e_z_ * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
+   *u_z = ( (e_z_  * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
+   //*u_z = (*u_z * pgain ) + (*u_z * dgain);
+  // if (*u_z > 1 || *u_z <-1)
+	  // if (*u_z > 1)
+		 //  *u_z = 1;
+	  // else
+		//   *u_z = -1;
+	  
+   //*u_z = (*u_z * 1/2) + ( (K_z_1_/lambda_z_) * dot_e_z_ );
    
-   if (*u_z > 1 || *u_z <-1)
-	   if (*u_z > 1)
-		   *u_z = 1;
-	   else
-		   *u_z = -1;
+   //if (*u_z > 1 || *u_z <-1)
+	 //  if (*u_z > 1)
+		//   *u_z = 1;
+	  // else
+		//   *u_z = -1;
 	   
-   *u_z = (*u_z * 1/2) + ( (K_z_1_/lambda_z_) * dot_e_z_ );
-   
-   if (*u_z > 1 || *u_z <-1)
-	   if (*u_z > 1)
-		   *u_z = 1;
-	   else
-		   *u_z = -1;
-	   
-    *u_z = m_* ( *u_z * lambda_z_);
-   //*u_z = m_* ( *u_z * (e_z_ * Slider)* lambda_z_);
+     //Original
+    //*u_z = m_* ( *u_z * lambda_z_);
+
+     
+
+     
+      //if(e_z_< 0)
+        //pgain = pgain + 0.1;
+      //else if(e_z_ > 0 )
+         //pgain = pgain - 0.1;
+      
+
+
+    //*u_z = m_* ( (*u_z +(pgain*e_z_)+(dgain*dot_e_z_)) * lambda_z_);
+   //*u_z = m_* ( *u_z * (pow(e_z_ ,test1)+pow(dot_e_z_,test1)) * lambda_z_);
   
    
+   *u_z = m_* ( *u_z * lambda_z_);
    
    
    
     //printf("Test1 from controller: %lf \n",test1);
-    printf("Slider from controller: %lf \n",slider);
+
+    //printf("Pgain from controller: %lf \n",pgain);
+    //printf("Dgain from controller: %lf \n",dgain);
+    // printf("U_z from controller: %lf \n",*u_z);
+     //printf("E_z from controller: %lf \n",e_z_);
+   //printf("U_z from controller: %lf \n",K_z_1_);
+    //printf("Slider from controller: %lf \n",slider);
    
    
    //u_Terr cocmputing
@@ -974,6 +999,9 @@ void PositionController::AttitudeController(double* u_phi, double* u_theta, doub
    *u_phi = Ix_ *   ( ( ( (alpha_phi_/mu_phi_    ) * dot_e_phi_  ) - ( (beta_phi_/pow(mu_phi_,2)    ) * e_phi_  ) ) - ( ( (Iy_ - Iz_)/(Ix_ * mu_theta_ * mu_psi_) ) * e_theta_ * e_psi_) );
    *u_theta = Iy_ * ( ( ( (alpha_theta_/mu_theta_) * dot_e_theta_) - ( (beta_theta_/pow(mu_theta_,2)) * e_theta_) ) - ( ( (Iz_ - Ix_)/(Iy_ * mu_phi_ * mu_psi_  ) ) * e_phi_   * e_psi_) );
    *u_psi = Iz_ *   ( ( ( (alpha_psi_/mu_psi_    ) * dot_e_psi_  ) - ( (beta_psi_/pow(mu_psi_,2)    ) * e_psi_  ) ) - ( ( (Ix_ - Iy_)/(Iz_ * mu_theta_ * mu_phi_) ) * e_theta_ * e_phi_) );
+   //*u_phi = Ix_ *   ( ( ( (alpha_phi_/mu_phi_    ) * dot_e_phi_  ) - ( (beta_phi_/pow(mu_phi_,2)    ) * e_phi_  ) ) - ( ( (Iy_ - Iz_)/(Ix_ * mu_theta_ * mu_psi_) ) * e_theta_ * e_psi_) );
+   //*u_theta = Iy_ * ( ( ( (alpha_theta_/mu_theta_) * dot_e_theta_) - ( (beta_theta_/pow(mu_theta_,2)) * e_theta_) ) - ( ( (Iz_ - Ix_)/(Iy_ * mu_phi_ * mu_psi_  ) ) * e_phi_   * e_psi_) );
+   //*u_psi = Iz_ *   ( ( ( (alpha_psi_/mu_psi_    ) * dot_e_psi_  ) - ( (beta_psi_/pow(mu_psi_,2)    ) * e_psi_  ) ) - ( ( (Ix_ - Iy_)/(Iz_ * mu_theta_ * mu_phi_) ) * e_theta_ * e_phi_) );
 
 }
 

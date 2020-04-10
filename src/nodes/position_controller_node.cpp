@@ -109,6 +109,12 @@ void PositionControllerNode::InitializeParams() {
   GetRosParameter(pnh, "test1/test1",
                   position_controller_.controller_parameters_.test1,
                   &position_controller_.controller_parameters_.test1);
+  GetRosParameter(pnh, "pgain/pgain",
+                  position_controller_.controller_parameters_.pgain,
+                  &position_controller_.controller_parameters_.pgain);
+  GetRosParameter(pnh, "dgain/dgain",
+                  position_controller_.controller_parameters_.dgain,
+                  &position_controller_.controller_parameters_.dgain);
   GetRosParameter(pnh, "SliderValue",
                   position_controller_.controller_parameters_.slider,
                   &position_controller_.controller_parameters_.slider);

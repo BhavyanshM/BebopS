@@ -9,9 +9,9 @@ mu_z: {mu_z: 1}
 mu_phi: {mu_phi: 0.0544}
 mu_theta: {mu_theta: 0.0543}
 mu_psi: {mu_psi: 0.44}
-U_xyz: {U_x: 1.1810, U_y: 1.1810, U_z: 4.6697}
+U_xyz: {U_x: 2.0996, U_y: 2.0996, U_z: 4.6697}
 
 test1 : {test1: 2.00}
 
-pgain : {pgain: 25.0}
-dgain : {dgain: 1.0}
+pgain : {pgain: 20.0}
+dgain : {dgain: 2.0}

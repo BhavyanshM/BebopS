@@ -60,9 +60,10 @@ static const double test1const = 0.0;
 static const double pgainconst = 0.0;
 static const double dgainconst = 0.0;
 static const double sliderconst = 0.0;
-
-static const Eigen::Vector3d UqDefaultXYZ = Eigen::Vector3d(1.1810, 1.1810, 4.6697);
-
+//original
+//static const Eigen::Vector3d UqDefaultXYZ = Eigen::Vector3d(1.1810, 1.1810, 4.6697);
+//Modified with a 25 degree instead of 18 degree
+static const Eigen::Vector3d UqDefaultXYZ = Eigen::Vector3d(2.4833, 2.4833, 4.6697);
 class PositionControllerParameters {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

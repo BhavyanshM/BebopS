@@ -822,9 +822,10 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    assert(u_Terr);
    
    //u_x computing
-   
+   //original
   //*u_x = ( (e_x_ * K_x_1_ * K_x_2_)/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
    *u_x = ( (e_x_ * K_x_1_ * K_x_2_)/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
+   //*u_x = ( ((pgain * e_x_)+(e_x_ * K_x_1_ * K_x_2_))/lambda_x_ ) + ( (dot_e_x_ * K_x_2_)/lambda_x_ );
    
    if (*u_x > 1 || *u_x <-1)
 	   if (*u_x > 1)
@@ -834,14 +835,28 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
 	   
    *u_x = (*u_x * 1/2) + ( (K_x_1_/lambda_x_) * dot_e_x_ );
    
-   //if (*u_x > 1 || *u_x <-1)
-	  // if (*u_x > 1)
-		 //  *u_x = 1;
-	  // else
-		//   *u_x = -1;
-	  //*u_x = m_ * (*u_x * lambda_x_);
-   *u_x = m_ * ((*u_x +(pgain * e_x_))* lambda_x_);
-   printf("U_x from controller: %lf \n",*u_x);
+   if (*u_x > 1 || *u_x <-1)
+	   if (*u_x > 1)
+		   *u_x = 1;
+	   else
+		   *u_x = -1;
+    //*u_x =  (*u_x +(pgain * e_x_) + (dgain*dot_e_x_))/ lambda_x_;
+
+    //Thresholding to ensure virtual input is met
+    //if(*u_x > lambda_x_|| *u_x < -lambda_x_)
+     // if(*u_x > lambda_x_)
+      //  *u_x = 1;
+      //else
+       // *u_x = -1;
+
+
+	  *u_x = m_ * (*u_x * lambda_x_);
+   //Quadratic
+   //*u_x = m_ * (  (*u_x +  (pgain * e_x_*abs(e_x_)) +  (dgain*dot_e_x_*abs(dot_e_x_))) * lambda_x_);
+   //Linear
+   //*u_x = m_ * (  (*u_x +  (pgain * e_x_) +  (dgain*dot_e_x_)) * lambda_x_);
+  //printf("Lambdax from controller: %lf \n",lambda_x_);
+   //printf("U_x from controller: %lf \n",*u_x);
    //u_y computing
    *u_y = ( (e_y_ * K_y_1_ * K_y_2_)/lambda_y_ ) + ( (dot_e_y_ * K_y_2_)/lambda_y_ );
    
@@ -859,7 +874,21 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
 	   else
 		   *u_y = -1;
 	   
-   *u_y = m_* ( *u_y * lambda_y_);
+  
+
+   *u_y =  (*u_y +(pgain * e_y_) + (dgain*dot_e_y_))/ lambda_y_;
+
+    //Thresholding to ensure virtual input is met
+    if(*u_y > lambda_y_|| *u_y < -lambda_y_)
+      if(*u_y > lambda_y_)
+        *u_y = 1;
+      else
+        *u_y = -1;
+
+      *u_y = m_* ( *u_y * lambda_y_);
+      printf("U_y from controller: %lf \n",*u_y);
+    // Original
+     //*u_y = m_* ( *u_y * lambda_y_);
    
    //u_z computing
 
@@ -867,21 +896,21 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
    //*u_z = ( (e_z_ * K_z_1_ * K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
    // *u_z = ( (e_z_ * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
    *u_z = ( (e_z_  * K_z_1_* K_z_2_)/lambda_z_ ) + ( (dot_e_z_ * K_z_2_)/lambda_z_ );
-   //*u_z = (*u_z * pgain ) + (*u_z * dgain);
-  // if (*u_z > 1 || *u_z <-1)
-	  // if (*u_z > 1)
-		 //  *u_z = 1;
-	  // else
-		//   *u_z = -1;
+  
+   if (*u_z > 1 || *u_z <-1)
+	   if (*u_z > 1)
+		   *u_z = 1;
+	   else
+		   *u_z = -1;
 	  
-   //*u_z = (*u_z * 1/2) + ( (K_z_1_/lambda_z_) * dot_e_z_ );
+   *u_z = (*u_z * 1/2) + ( (K_z_1_/lambda_z_) * dot_e_z_ );
    
-   //if (*u_z > 1 || *u_z <-1)
-	 //  if (*u_z > 1)
-		//   *u_z = 1;
-	  // else
-		//   *u_z = -1;
-	   
+   if (*u_z > 1 || *u_z <-1)
+	   if (*u_z > 1)
+		   *u_z = 1;
+	   else
+		   *u_z = -1;
+	 
      //Original
     //*u_z = m_* ( *u_z * lambda_z_);
 

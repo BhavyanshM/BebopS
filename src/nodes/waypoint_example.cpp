@@ -111,18 +111,25 @@ int main(int argc, char** argv){
   float zPos = 1.0;
   ROS_INFO("Start publishing waypoints.");
 
-  int count = 0;
-  int waitTime = 1.0;
-  int totalDuration = 1000000;
+  //int count = 0;
+  //int waitTime = 1.0;
+  //int totalDuration = 1000000;
 
-  for (size_t i = 0; i < totalDuration; ++i) {
-        count++;
+  //for (size_t i = 0; i < totalDuration; ++i) {
+    for (size_t i = 0; i < waypoints.size(); ++i) {
+
+        //count++;
         trajectory_msgs::MultiDOFJointTrajectory trajectory_msg;
         trajectory_msg.header.stamp = ros::Time::now();
-        float xPos = sin(0.1*count);
-        float yPos = cos(0.1*count);
-        Eigen::Vector3d desired_position(xPos, yPos, zPos);
-        double desired_yaw = 0.0;
+        //float xPos = sin(0.1*count);
+        //float yPos = cos(0.1*count);
+        //Sets Waypoints to Zero
+        //float xPos = 0;
+        //float yPos = 0;
+        //Eigen::Vector3d desired_position(xPos, yPos, zPos);
+        //double desired_yaw = 0.0;
+        Eigen::Vector3d desired_position(waypoints[i].position.x(), waypoints[i].position.y(), waypoints[i].position.z());
+        double desired_yaw = waypoints[i].yaw;
         mav_msgs::msgMultiDofJointTrajectoryFromPositionYaw(desired_position, desired_yaw, &trajectory_msg);
 
         ROS_INFO("Publishing waypoint on namespace %s: [%f, %f, %f].",       
@@ -134,8 +141,8 @@ int main(int argc, char** argv){
 
          // Wait for t seconds to let the Gazebo GUI show up.
 
-         double t = waitTime;
-
+         //double t = waitTime;
+        double t = waypoints[i].waiting_time;
          ros::Duration(t).sleep();
 
   }

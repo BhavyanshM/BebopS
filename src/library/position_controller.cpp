@@ -840,14 +840,14 @@ void PositionController::PosController(double* u_T, double* phi_r, double* theta
 		   *u_x = 1;
 	   else
 		   *u_x = -1;
-    //*u_x =  (*u_x +(pgain * e_x_) + (dgain*dot_e_x_))/ lambda_x_;
+    *u_x =  (*u_x +(pgain * e_x_) + (dgain*dot_e_x_))/ lambda_x_;
 
-    //Thresholding to ensure virtual input is met
-    //if(*u_x > lambda_x_|| *u_x < -lambda_x_)
-     // if(*u_x > lambda_x_)
-      //  *u_x = 1;
-      //else
-       // *u_x = -1;
+    // Thresholding to ensure virtual input is met
+    if(*u_x > lambda_x_|| *u_x < -lambda_x_)
+     if(*u_x > lambda_x_)
+       *u_x = 1;
+      else
+       *u_x = -1;
 
 
 	  *u_x = m_ * (*u_x * lambda_x_);
